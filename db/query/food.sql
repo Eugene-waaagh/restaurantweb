@@ -8,5 +8,11 @@ INSERT INTO food (
              $1, $2, $3, $4
          ) RETURNING *;
 
+-- name: ListFood :many
+SELECT * FROM food
+WHERE category_id = $1
+ORDER BY id;
+
+
 DELETE FROM food
 WHERE name = $1;

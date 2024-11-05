@@ -44,3 +44,38 @@ func (q *Queries) CreateFood(ctx context.Context, arg CreateFoodParams) (Food, e
 	)
 	return i, err
 }
+
+const listFood = `-- name: ListFood :many
+SELECT id, name, description, price, category_id FROM food
+WHERE category_id = $1
+ORDER BY id
+`
+
+func (q *Queries) ListFood(ctx context.Context, categoryID int32) ([]Food, error) {
+	rows, err := q.db.QueryContext(ctx, listFood, categoryID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Food
+	for rows.Next() {
+		var i Food
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Price,
+			&i.CategoryID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

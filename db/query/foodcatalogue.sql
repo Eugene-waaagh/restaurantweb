@@ -9,6 +9,10 @@ INSERT INTO foodcatalogue (
 SELECT * FROM foodcatalogue
 WHERE id = $1 LIMIT 1;
 
+-- name: ListCategory :many
+SELECT * FROM food
+ORDER BY id;
+
 -- name: UpdateCategory :one
 UPDATE foodcatalogue
 SET name = $2
@@ -17,4 +21,4 @@ WHERE id = $1
 
 -- name: DeleteCategory :exec
 DELETE FROM foodcatalogue
-WHERE name = $1;
+WHERE id = $1;
