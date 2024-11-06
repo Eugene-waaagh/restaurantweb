@@ -16,7 +16,10 @@ INSERT INTO food (
     price,
     category_id
 ) VALUES (
-             $1, $2, $3, $4
+             $1,
+             $2,
+             $3,
+             $4
          ) RETURNING id, name, description, price, category_id
 `
 
@@ -34,6 +37,24 @@ func (q *Queries) CreateFood(ctx context.Context, arg CreateFoodParams) (Food, e
 		arg.Price,
 		arg.CategoryID,
 	)
+	var i Food
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.Price,
+		&i.CategoryID,
+	)
+	return i, err
+}
+
+const getFood = `-- name: GetFood :one
+SELECT id, name, description, price, category_id FROM food
+WHERE id = $1 LIMIT 1
+`
+
+func (q *Queries) GetFood(ctx context.Context, id int32) (Food, error) {
+	row := q.db.QueryRowContext(ctx, getFood, id)
 	var i Food
 	err := row.Scan(
 		&i.ID,
@@ -78,4 +99,38 @@ func (q *Queries) ListFood(ctx context.Context, categoryID int32) ([]Food, error
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateFood = `-- name: UpdateFood :one
+UPDATE food
+SET name = $2, description = $3, price = $4, category_id = $5
+WHERE id = $1
+RETURNING id, name, description, price, category_id
+`
+
+type UpdateFoodParams struct {
+	ID          int32  `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Price       int32  `json:"price"`
+	CategoryID  int32  `json:"category_id"`
+}
+
+func (q *Queries) UpdateFood(ctx context.Context, arg UpdateFoodParams) (Food, error) {
+	row := q.db.QueryRowContext(ctx, updateFood,
+		arg.ID,
+		arg.Name,
+		arg.Description,
+		arg.Price,
+		arg.CategoryID,
+	)
+	var i Food
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.Price,
+		&i.CategoryID,
+	)
+	return i, err
 }

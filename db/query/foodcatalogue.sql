@@ -10,14 +10,16 @@ SELECT * FROM foodcatalogue
 WHERE id = $1 LIMIT 1;
 
 -- name: ListCategory :many
-SELECT * FROM food
-ORDER BY id;
+SELECT * FROM foodcatalogue
+ORDER BY id
+LIMIT $1
+OFFSET $2;
 
 -- name: UpdateCategory :one
 UPDATE foodcatalogue
 SET name = $2
 WHERE id = $1
-    RETURNING *;
+RETURNING *;
 
 -- name: DeleteCategory :exec
 DELETE FROM foodcatalogue

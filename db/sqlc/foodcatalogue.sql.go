@@ -47,26 +47,27 @@ func (q *Queries) GetCategory(ctx context.Context, id int32) (Foodcatalogue, err
 }
 
 const listCategory = `-- name: ListCategory :many
-SELECT id, name, description, price, category_id FROM food
+SELECT id, name FROM foodcatalogue
 ORDER BY id
+LIMIT $1
+OFFSET $2
 `
 
-func (q *Queries) ListCategory(ctx context.Context) ([]Food, error) {
-	rows, err := q.db.QueryContext(ctx, listCategory)
+type ListCategoryParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) ListCategory(ctx context.Context, arg ListCategoryParams) ([]Foodcatalogue, error) {
+	rows, err := q.db.QueryContext(ctx, listCategory, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Food
+	var items []Foodcatalogue
 	for rows.Next() {
-		var i Food
-		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			&i.Description,
-			&i.Price,
-			&i.CategoryID,
-		); err != nil {
+		var i Foodcatalogue
+		if err := rows.Scan(&i.ID, &i.Name); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -84,7 +85,7 @@ const updateCategory = `-- name: UpdateCategory :one
 UPDATE foodcatalogue
 SET name = $2
 WHERE id = $1
-    RETURNING id, name
+RETURNING id, name
 `
 
 type UpdateCategoryParams struct {
