@@ -1,10 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html lang="en-GB">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
+
 <body>
-$END$
+<h1>Add Food Category</h1>
+<form id="category-name-form">
+  <div>
+    <label for="category-name">Category Name:</label>
+    <input type="text" name="category-name" id="name" required />
+  </div>
+  <div>
+    <input type="submit" value="Submit"/>
+  </div>
+</form>
+
+<script>
+  document.getElementById('category-name-form').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    const categoryName = document.getElementById('name').value;
+
+    const data = {
+      "categoryName": categoryName
+    };
+
+    axios.post('http://localhost:8080/foodcatalog', data)
+            .then(function (response) {
+              console.log(response);
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+  });
+</script>
 </body>
-</html>

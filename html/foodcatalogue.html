@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Category Form</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<h1>Add Food Category</h1>
+<form id="categoryForm">
+    <label for="name">Category Name:</label><br>
+    <input type="text" id="name" name="name" required><br><br>
+    <button type="submit">Submit</button>
+</form>
+
+<script>
+    // Attach form submit event
+    document.getElementById('categoryForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevent page reload on form submit
+
+        // Get form data
+        const categoryData = {
+            name: document.getElementById('name').value
+        };
+
+        // Send POST request to the Go server to create a new category
+        axios.post('http://localhost:8080/foodcatalogue', categoryData)
+            .then(response => {
+                alert('Food category added successfully!');
+                console.log(response.data); // Log the response from the server
+            })
+            .catch(error => {
+                alert('Error adding food category.');
+                console.error(error);
+            });
+    });
+</script>
+</body>
+</html>
