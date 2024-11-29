@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"github.com/eugene-waaagh/restaurantweb/util"
 	"log"
 	"os"
 	"testing"
@@ -17,12 +18,17 @@ const (
 var testQueries *Queries
 
 func TestMain(m *testing.M) {
-	conn, err := sql.Open(dbDriver, dbSource)
+	config, err := util.LoadConfig("../..")
+	if err != nil {
+		log.Fatal("cannot load config:", err)
+	}
+
+	testDB, err := sql.Open(config.DBDrive, config.DBSource)
 	if err != nil {
 		log.Fatal("cannot connect to db:", err)
 	}
 
-	testQueries = New(conn)
+	testQueries = New(testDB)
 
 	os.Exit(m.Run())
 }
