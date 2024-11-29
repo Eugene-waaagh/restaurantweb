@@ -1,7 +1,6 @@
 package api
 
 import (
-	db "github.com/eugene-waaagh/restaurantweb/db/sqlc"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -17,9 +16,11 @@ func (server *Server) createCatalogue(ctx *gin.Context) {
 		return
 	}
 
-	arg := db.CreateFoodParams{
-		Name: req.Name,
+	foodcatalogue, err := server.store.CreateCategory(ctx, req.Name)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
 	}
 
-	foodc
+	ctx.JSON(http.StatusOK, foodcatalogue)
 }
