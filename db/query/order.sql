@@ -20,10 +20,6 @@ SET status = $2
 WHERE id = $1
     RETURNING *;
 
--- name: DeleteOrder :exec
-DELETE FROM "order"
-WHERE id = $1;
-
 -- Special action
 
 -- name: GetFullOrderDetails :many
